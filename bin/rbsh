@@ -1,19 +1,14 @@
 #!/bin/bash
 
-# Init constants
-BACKUP_DIR_NAME=".rbsh"
-META_FILE_NAME=".rbsh_meta"
-BACKUP_DIR_PATH="$HOME/$BACKUP_DIR_NAME"
-META_FILE_PATH="$HOME/$META_FILE_NAME"
+source ./source/constants.sh
+source ./source/core.sh
 
 # CLI options
 HELP_OPTION_LONG="--help"
 HELP_OPTION_SHORT="-h"
+CLEAR_OPTION="--clear"
 LIST_ARGUMENT="list"
 RECOVER_ARGUMENT="recover"
-
-# Load core functions
-source ./source/core.sh
 
 # Check options and arguments
 while [ "$#" -gt 0 ]; do
@@ -31,7 +26,12 @@ while [ "$#" -gt 0 ]; do
       show_help
       shift
     ;;
+    "${CLEAR_OPTION^^}")
+      clear_objects
+      shift
+    ;;
     *)
+      remove_objects $1
       shift
     ;;
   esac

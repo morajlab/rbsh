@@ -1,21 +1,21 @@
 #!/bin/bash
 
 # Remove source objects (files, directories, etc.)
-remove() {
+remove_objects() {
   # $1 is source object
 
   this_time=$(($(date +%s%N)/1000000))
-  obj_backup_dir_name="$(echo $this_time)_$(basename $1)"
-  obj_backup_dir_path="$BACKUP_DIR_PATH/$obj_backup_dir_name/"
-  source_obj=$1
+  absolute_path=$(realpath $1)
+  path_md5_hash=$(echo -n $absolute_path-$this_time | md5sum | awk '{print $1}')
+  obj_backup_dir_path="$BACKUP_DIR_PATH/$path_md5_hash/"
 
-  if [ -d $1 ]; then
-    source_obj="$source_obj/"
+  if [ -d $absolute_path ]; then
+    absolute_path="$absolute_path/"
   fi
 
   mkdir "$obj_backup_dir_path" && \
-  mv "$source_obj" "$obj_backup_dir_path" && \
-  add_meta $obj_backup_dir_name $(realpath $1)
+  mv "$absolute_path" "$obj_backup_dir_path" && \
+  add_meta $path_md5_hash $absolute_path
 }
 
 # Add metadata to rbsh meta file
@@ -23,12 +23,22 @@ add_meta() {
   # $1 is backup file path
   # $2 is source absolute path
 
-  echo "$1, $2" >> "$META_FILE_PATH"
+  echo "$(date), $1, $2" >> "$META_FILE_PATH"
 }
 
 # List all removed objects
 list_objects() {
-  cat $META_FILE_PATH
+  echo "Hash | Date | Path"
+
+  if [[ $(wc -l < $META_FILE_PATH) != "0" ]]; then
+    while IFS="," read -r r_date r_hash r_path; do
+      if [[ ! -z "$r_path" && ! -z "$r_date" && ! -z "$r_hash" ]]; then
+        echo "$r_hash | $r_date | $r_path" | xargs
+      fi
+    done < $META_FILE_PATH
+  else
+    echo "--- No data avalable ---"
+  fi
 }
 
 # Recover removed objects
@@ -44,4 +54,10 @@ recover_objects() {
 # Show cli help
 show_help() {
   rm --help
+}
+
+# Remove object(s) permanently
+clear_objects() {
+  rm -rf $BACKUP_DIR_PATH/* && \
+  echo -n > $META_FILE_PATH
 }
