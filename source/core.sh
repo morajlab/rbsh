@@ -28,7 +28,17 @@ add_meta() {
 
 # List all removed objects
 list_objects() {
-  ls -la $BACKUP_DIR_PATH
+  cat $META_FILE_PATH
+}
+
+# Recover removed objects
+recover_objects() {
+  if [ -d "$1" || -f "$1" ]; then
+    echo "haha"
+  else
+    echo "File or directory doesn't exist !"
+    exit 1
+  fi
 }
 
 # Show cli help

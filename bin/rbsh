@@ -10,6 +10,7 @@ META_FILE_PATH="$HOME/$META_FILE_NAME"
 HELP_OPTION_LONG="--help"
 HELP_OPTION_SHORT="-h"
 LIST_ARGUMENT="list"
+RECOVER_ARGUMENT="recover"
 
 # Load core functions
 source ./source/core.sh
@@ -17,6 +18,11 @@ source ./source/core.sh
 # Check options and arguments
 while [ "$#" -gt 0 ]; do
   case "${1^^}" in
+    "${RECOVER_ARGUMENT^^}")
+      recover_objects $2
+      shift
+      shift
+    ;;
     "${LIST_ARGUMENT^^}")
       list_objects
       shift
