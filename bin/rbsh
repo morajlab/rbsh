@@ -19,7 +19,8 @@ while [ "$#" -gt 0 ]; do
       shift
     ;;
     "${LIST_ARGUMENT^^}")
-      list_objects
+      list_objects $2
+      shift
       shift
     ;;
     "${CLEAR_ARGUMENT^^}")
