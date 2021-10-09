@@ -6,7 +6,7 @@ source ./source/core.sh
 # CLI options
 HELP_OPTION_LONG="--help"
 HELP_OPTION_SHORT="-h"
-CLEAR_OPTION="--clear"
+CLEAR_ARGUMENT="clear"
 LIST_ARGUMENT="list"
 RECOVER_ARGUMENT="recover"
 
@@ -22,12 +22,13 @@ while [ "$#" -gt 0 ]; do
       list_objects
       shift
     ;;
-    "${HELP_OPTION_LONG^^}" | "${HELP_OPTION_SHORT^^}")
-      show_help
+    "${CLEAR_ARGUMENT^^}")
+      clear_objects $2
+      shift
       shift
     ;;
-    "${CLEAR_OPTION^^}")
-      clear_objects
+    "${HELP_OPTION_LONG^^}" | "${HELP_OPTION_SHORT^^}")
+      show_help
       shift
     ;;
     *)

@@ -13,7 +13,7 @@ remove_objects() {
     absolute_path="$absolute_path/"
   fi
 
-  mkdir "$obj_backup_dir_path" && \
+  mkdir -p "$obj_backup_dir_path" && \
   mv "$absolute_path" "$obj_backup_dir_path" && \
   add_meta $path_md5_hash $absolute_path
 }
@@ -43,12 +43,13 @@ list_objects() {
 
 # Recover removed objects
 recover_objects() {
-  if [ -d "$1" || -f "$1" ]; then
-    echo "haha"
-  else
-    echo "File or directory doesn't exist !"
-    exit 1
-  fi
+  echo $1
+  # if [ -d "$1" || -f "$1" ]; then
+  #   echo "haha"
+  # else
+  #   echo "File or directory doesn't exist !"
+  #   exit 1
+  # fi
 }
 
 # Show cli help
@@ -58,6 +59,22 @@ show_help() {
 
 # Remove object(s) permanently
 clear_objects() {
-  rm -rf $BACKUP_DIR_PATH/* && \
-  echo -n > $META_FILE_PATH
+  OPTION="--all"
+
+  case "${1^^}" in
+    "${OPTION^^}")
+      rm -rf $BACKUP_DIR_PATH/* && \
+      echo -n > $META_FILE_PATH
+    ;;
+    *)
+      while IFS="," read -r r_date r_hash r_path; do
+        if [[ ! -z "$r_path" && ! -z "$r_date" && ! -z "$r_hash" ]]; then
+          if [ $1 = $r_path -o $1 = $r_hash ]; then
+            rm -rf $BACKUP_DIR_PATH/$(echo -n $r_hash | xargs) && \
+            sed -i "/$r_hash/d" $META_FILE_PATH
+          fi
+        fi
+      done < $META_FILE_PATH
+    ;;
+  esac
 }
