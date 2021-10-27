@@ -1,7 +1,11 @@
 #!/bin/bash
 
-source ./source/constants.sh
-source ./source/core.sh
+ROOT_DIR_PATH="."
+
+[ -f "$(which rbsh)" ] && ROOT_DIR_PATH=$(dirname $(dirname $(which rbsh)))
+
+source $ROOT_DIR_PATH/source/constants.sh
+source $ROOT_DIR_PATH/source/core.sh
 
 # CLI options
 HELP_OPTION_LONG="--help"
